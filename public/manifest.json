@@ -1,0 +1,17 @@
+{
+  "name": "SpotyVoyd - Music Downloader",
+  "short_name": "SpotyVoyd",
+  "description": "Premium Spotify Music Downloader",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%231DB954'/><stop offset='100%25' style='stop-color:%237B2FF7'/></linearGradient></defs><circle cx='50' cy='50' r='45' fill='%23050505' stroke='url(%23g)' stroke-width='4'/><text x='50' y='58' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold' font-size='16'>SV</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ]
+}

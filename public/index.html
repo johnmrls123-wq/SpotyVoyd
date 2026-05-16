@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#050505">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="description" content="SpotyVoyd - Premium Spotify Music Downloader">
+    <title>SpotyVoyd</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Floating Background Elements -->
+    <div class="bg-aurora"></div>
+    <div class="floating-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+    <div class="particles-container" id="particlesContainer"></div>
+
+    <!-- Desktop Block Overlay -->
+    <div class="desktop-block" id="desktopBlock">
+        <div class="desktop-content">
+            <div class="desktop-icon">📱</div>
+            <h1 class="desktop-title">Mobile Only Experience</h1>
+            <p class="desktop-text">SpotyVoyd is crafted exclusively for mobile devices.</p>
+            <div class="neon-line"></div>
+        </div>
+    </div>
+
+    <!-- Main Mobile App Container -->
+    <div class="mobile-container" id="mobileContainer">
+        <!-- Splash Screen -->
+        <div class="splash-screen" id="splashScreen">
+            <div class="splash-content">
+                <div class="splash-logo">
+                    <svg viewBox="0 0 100 100" class="logo-svg">
+                        <circle cx="50" cy="50" r="40" fill="none" stroke="url(#gradient)" stroke-width="4" class="logo-circle"/>
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#1DB954;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#7B2FF7;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <h1 class="splash-title">Spoty<span>Voyd</span></h1>
+                </div>
+                <div class="visualizer-bars" id="visualizerBars">
+                    <span></span><span></span><span></span><span></span><span></span>
+                </div>
+                <p class="splash-subtitle">Music Downloader</p>
+            </div>
+        </div>
+
+        <!-- App Content (Hidden initially) -->
+        <div class="app-content" id="appContent" style="display: none;">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-left">
+                    <span class="logo-small">Spoty<span>Voyd</span></span>
+                </div>
+                <div class="header-right">
+                    <span class="header-tagline">Music Downloader</span>
+                    <div class="profile-icon">
+                        <span>👤</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Scrollable Area -->
+            <main class="main-content">
+                <!-- Input Section -->
+                <section class="input-section">
+                    <div class="input-wrapper">
+                        <input type="url" id="spotifyUrl" class="url-input" placeholder="Paste Spotify link..." autocomplete="off">
+                        <button class="paste-btn" id="pasteBtn" aria-label="Paste">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+                            </svg>
+                        </button>
+                        <button class="clear-btn" id="clearBtn" aria-label="Clear" style="display: none;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <button class="download-btn" id="downloadBtn">
+                        <span class="btn-text">DOWNLOAD NOW</span>
+                        <span class="btn-glow"></span>
+                    </button>
+                </section>
+
+                <!-- Preview Card (Hidden by default) -->
+                <section class="preview-section" id="previewSection" style="display: none;">
+                    <div class="music-card" id="musicCard">
+                        <div class="card-reflection"></div>
+                        <div class="card-cover">
+                            <img src="" alt="Album Cover" id="coverImage">
+                            <div class="cover-overlay"></div>
+                        </div>
+                        <div class="card-info">
+                            <h2 class="card-title" id="cardTitle">-</h2>
+                            <p class="card-artist" id="cardArtist">-</p>
+                            <div class="card-meta">
+                                <span id="cardDuration">-</span>
+                                <span class="meta-dot">•</span>
+                                <span id="cardYear">-</span>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="action-btn download-mp3-btn" id="downloadMp3Btn">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                MP3
+                            </button>
+                            <button class="action-btn download-cover-btn" id="downloadCoverBtn">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                Cover
+                            </button>
+                            <button class="action-btn copy-title-btn" id="copyTitleBtn">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Downloading Screen (Hidden) -->
+                <section class="downloading-screen" id="downloadingScreen" style="display: none;">
+                    <div class="downloading-content">
+                        <div class="progress-ring-container">
+                            <svg class="progress-ring" width="120" height="120">
+                                <circle class="progress-ring-bg" cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="4"/>
+                                <circle class="progress-ring-fill" id="progressRingFill" cx="60" cy="60" r="52" fill="none" stroke="url(#progressGradient)" stroke-width="4" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+                                <defs>
+                                    <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#1DB954;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#7B2FF7;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="progress-percentage" id="progressPercentage">0%</div>
+                        </div>
+                        <div class="equalizer-bars" id="equalizerBars">
+                            <span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                        <p class="downloading-status" id="downloadingStatus">Searching audio...</p>
+                    </div>
+                </section>
+
+                <!-- History Section -->
+                <section class="history-section" id="historySection">
+                    <div class="section-header">
+                        <h3>Recent Downloads</h3>
+                        <button class="clear-history-btn" id="clearHistoryBtn" style="display: none;">Clear All</button>
+                    </div>
+                    <div class="history-list" id="historyList">
+                        <div class="empty-history">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3">
+                                <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+                            </svg>
+                            <p>No downloads yet</p>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <!-- Bottom Navigation -->
+            <nav class="bottom-nav">
+                <button class="nav-item active" data-tab="home">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    <span>Home</span>
+                </button>
+                <button class="nav-item" data-tab="history">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span>History</span>
+                </button>
+                <button class="nav-item" data-tab="downloads">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Files</span>
+                </button>
+                <button class="nav-item" data-tab="settings">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    <span>Settings</span>
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
