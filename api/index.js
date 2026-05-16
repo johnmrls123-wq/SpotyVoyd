@@ -4,94 +4,117 @@ const cors = require('cors');
 const app = express();
 
 app.use(cors());
-app.use(express.json());
 app.use(express.static('public'));
 
-// Fungsi ekstrak ID dari URL Spotify
-function extractSpotifyId(url) {
+function extractId(url) {
     try {
-        const urlObj = new URL(url);
-        const pathParts = urlObj.pathname.split('/');
-        const trackIndex = pathParts.indexOf('track');
-        if (trackIndex !== -1 && pathParts[trackIndex + 1]) {
-            return pathParts[trackIndex + 1].split('?')[0];
-        }
-        return null;
-    } catch {
-        return null;
-    }
+        const u = new URL(url);
+        const parts = u.pathname.split('/');
+        const idx = parts.indexOf('track');
+        return (idx !== -1 && parts[idx+1]) ? parts[idx+1].split('?')[0] : null;
+    } catch { return null; }
 }
 
-// Endpoint download
 app.get('/api/download', async (req, res) => {
+    const { url } = req.query;
+    
+    if (!url) {
+        return res.json({ success: false, message: 'Masukkan URL Spotify!' });
+    }
+    
+    const trackId = extractId(url);
+    if (!trackId) {
+        return res.json({ success: false, message: 'URL tidak valid!' });
+    }
+    
+    console.log('Track ID:', trackId);
+    
+    // ===== SOURCE 1: spotifydown.com =====
     try {
-        const { url } = req.query;
-        
-        if (!url) {
-            return res.json({
-                success: false,
-                message: 'Masukkan URL Spotify!'
-            });
-        }
-        
-        const trackId = extractSpotifyId(url);
-        if (!trackId) {
-            return res.json({
-                success: false,
-                message: 'URL tidak valid! Harus link track Spotify.'
-            });
-        }
-        
-        console.log('Track ID:', trackId);
-        
-        // Coba ambil data dari Spotify API
-        const response = await axios({
-            method: 'GET',
-            url: `https://api.spotifydown.com/track?id=${trackId}`,
+        console.log('Coba Source 1...');
+        const r1 = await axios.get(`https://api.spotifydown.com/track?id=${trackId}`, {
+            timeout: 12000,
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36',
                 'Origin': 'https://spotifydown.com',
                 'Referer': 'https://spotifydown.com/'
-            },
-            timeout: 10000
+            }
         });
         
-        const data = response.data;
-        
-        if (data && data.title) {
+        if (r1.data && r1.data.link) {
             return res.json({
                 success: true,
                 data: {
-                    title: data.title,
-                    artist: data.artist || 'Unknown',
-                    album: data.album || 'Unknown',
-                    coverUrl: data.cover || '',
-                    downloadUrl: data.link || '',
-                    filename: `${data.artist} - ${data.title}.mp3`
+                    title: r1.data.title,
+                    artist: r1.data.artist,
+                    album: r1.data.album || '',
+                    coverUrl: r1.data.cover || '',
+                    downloadUrl: r1.data.link,
+                    filename: `${r1.data.artist} - ${r1.data.title}.mp3`
                 }
             });
         }
-        
-    } catch (error) {
-        console.error('Error:', error.message);
+    } catch(e) {
+        console.log('Source 1 gagal:', e.message);
     }
     
-    // Fallback kalau gagal
+    // ===== SOURCE 2: Spotify Official Preview =====
+    try {
+        console.log('Coba Source 2...');
+        
+        // Dapat token
+        const tokenRes = await axios.post(
+            'https://accounts.spotify.com/api/token',
+            'grant_type=client_credentials',
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Basic ' + Buffer.from(
+                        '4eb3e1a9c5e24a2d8f1d4a7b9c3e6f8a:2d8f1d4a7b9c3e6f8a4eb3e1a9c5e24a'
+                    ).toString('base64')
+                },
+                timeout: 10000
+            }
+        );
+        
+        const token = tokenRes.data.access_token;
+        
+        const trackRes = await axios.get(
+            `https://api.spotify.com/v1/tracks/${trackId}`,
+            { headers: { 'Authorization': `Bearer ${token}` }, timeout: 10000 }
+        );
+        
+        const track = trackRes.data;
+        
+        if (track && track.preview_url) {
+            return res.json({
+                success: true,
+                data: {
+                    title: track.name,
+                    artist: track.artists.map(a => a.name).join(', '),
+                    album: track.album.name,
+                    coverUrl: track.album.images[0]?.url || '',
+                    downloadUrl: track.preview_url,
+                    filename: `${track.artists[0].name} - ${track.name} (30s Preview).mp3`
+                }
+            });
+        }
+    } catch(e) {
+        console.log('Source 2 gagal:', e.message);
+    }
+    
+    // ===== GAGAL SEMUA =====
     return res.json({
         success: false,
-        message: 'Lagu tidak ditemukan. Coba link lain.'
+        message: 'Server download sedang sibuk. Coba link lain atau tunggu 5 menit.'
     });
 });
 
-// Health check
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'OK' });
+    res.json({ status: 'OK', time: new Date().toISOString() });
 });
 
-// Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-    console.log('Server running on port', PORT);
-});
+app.listen(PORT, '0.0.0.0', () => console.log('Server ready on', PORT));
 
 module.exports = app;
