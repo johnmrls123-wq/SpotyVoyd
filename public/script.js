@@ -328,51 +328,42 @@ function showPreview(data) {
     musicCard.style.animation = 'cardReveal 0.6s ease-out';
 }
 
+
 function hidePreview() {
     previewSection.style.display = 'none';
     currentTrackData = null;
 }
 
-// ===== DOWNLOAD ACTIONS =====
+// ===== DOWNLOAD ACTIONS ====
 async function downloadMp3() {
     if (!currentTrackData || !currentTrackData.downloadUrl) {
-        showToast('No download link available', 'error');
+        showToast('❌ Link download tidak tersedia!', 'error');
         return;
     }
     
     try {
-        showToast('Starting download...', 'success');
+        showToast('⬇️ Mendownload...', 'success');
         
-        // Show downloading animation
-        showDownloadingScreen();
-        await updateProgress(10, 'Preparing download...');
-        await sleep(500);
-        await updateProgress(50, 'Downloading MP3...');
-        
-        // Create download link
+        // Download langsung ke HP
         const link = document.createElement('a');
         link.href = currentTrackData.downloadUrl;
-        link.download = currentTrackData.filename || `${currentTrackData.artist} - ${currentTrackData.title}.mp3`;
+        link.download = currentTrackData.filename || 'lagu.mp3';
         link.target = '_blank';
+        link.rel = 'noopener noreferrer';
         document.body.appendChild(link);
-        
-        await updateProgress(80, 'Saving file...');
-        await sleep(300);
-        
         link.click();
-        document.body.removeChild(link);
         
-        await updateProgress(100, 'Download complete!');
-        await sleep(600);
-        hideDownloadingScreen();
+        // Hapus element setelah 1 detik
+        setTimeout(() => {
+            document.body.removeChild(link);
+        }, 1000);
         
-        showToast('MP3 downloaded! 🎵', 'success');
-        vibrate([50, 30, 50]);
+        showToast('✅ Download dimulai! Cek folder Download HP kamu 🎵', 'success');
+        vibrate([50, 30, 100]);
         
     } catch (error) {
-        hideDownloadingScreen();
-        showToast('Download failed. Try again.', 'error');
-        console.error('MP3 download error:', error);
+        showToast('❌ Gagal download. Coba lagi!', 'error');
+        console.error('Download error:', error);
     }
 }
 
